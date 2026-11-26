@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useStore } from "./store-provider";
 import { categories } from "@/lib/catalog";
+import { deliveryBanner } from "@/lib/delivery";
+import { useCatalog } from "./catalog-provider";
 
 export function Brand({ light = false }: { light?: boolean }) {
   return (
@@ -41,6 +43,7 @@ export function SiteHeader() {
   const [mobile, setMobile] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const { cartCount, setCartOpen, setSearchOpen, wishlist } = useStore();
+  const { delivery } = useCatalog();
   const links = [
     { href: "/", label: "Home" },
     { href: "/shop", label: "Shop" },
@@ -55,7 +58,7 @@ export function SiteHeader() {
         <span>A little inspiration for every big idea.</span>
         <span className="announcement-divider">✦</span>
         <Link href="/shop?offer=true">
-          Free delivery on orders over Rs 999 <ArrowRight size={13} />
+          {deliveryBanner(delivery)} <ArrowRight size={13} />
         </Link>
       </div>
       <header className="site-header">

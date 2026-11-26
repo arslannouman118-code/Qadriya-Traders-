@@ -32,6 +32,7 @@ export const inquiries = pgTable("inquiries", {
   email: varchar("email", { length: 254 }).notNull(),
   subject: varchar("subject", { length: 160 }).notNull(),
   message: text("message").notNull(),
+  handled: boolean("handled").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -64,4 +65,10 @@ export const productImages = pgTable("product_images", {
   mime: varchar("mime", { length: 40 }).notNull().default("image/jpeg"),
   data: text("data").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const settings = pgTable("settings", {
+  key: varchar("key", { length: 60 }).primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -93,6 +93,8 @@ export default async function AdminLayout({
           <Link href="/admin">Dashboard</Link>
           <Link href="/admin/products">Products</Link>
           <Link href="/admin/orders">Orders</Link>
+          <Link href="/admin/messages">Messages</Link>
+          <Link href="/admin/settings">Delivery</Link>
           <Link href="/" target="_blank">
             View website ↗
           </Link>

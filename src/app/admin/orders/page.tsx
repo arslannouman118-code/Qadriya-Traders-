@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
 import { formatPrice } from "@/lib/catalog";
-import { updateOrderStatus } from "../actions";
+import { updateOrderDelivery, updateOrderStatus } from "../actions";
 
 const STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
@@ -137,6 +137,33 @@ export default async function AdminOrdersPage({
                 </tbody>
               </table>
             </div>
+            {o.status !== "cancelled" && (
+              <form
+                action={updateOrderDelivery}
+                style={{ display: "grid", gap: 6, marginTop: 14, maxWidth: 360 }}
+              >
+                <input type="hidden" name="id" value={o.id} />
+                <label htmlFor={`delivery-${o.id}`} style={{ fontWeight: 600 }}>
+                  Delivery charge for this order (Rs)
+                </label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    id={`delivery-${o.id}`}
+                    name="delivery"
+                    inputMode="numeric"
+                    defaultValue={o.delivery}
+                    required
+                  />
+                  <button className="adm-btn adm-btn-light" type="submit">
+                    Save
+                  </button>
+                </div>
+                <small style={{ color: "#6b665d" }}>
+                  Put 0 for free delivery. The total updates. Please tell the
+                  customer about the new amount (call or WhatsApp).
+                </small>
+              </form>
+            )}
             {o.status === "cancelled" ? (
               <p style={{ margin: "12px 0 0" }}>
                 This order is cancelled. Its items were put back into stock.

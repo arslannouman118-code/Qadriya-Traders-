@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { getDeliverySettings } from "@/lib/settings";
+import { deliveryTerms } from "@/lib/delivery";
 export const metadata: Metadata = { title: "Terms & Conditions" };
-export default function TermsPage() {
+export default async function TermsPage() {
+  const delivery = await getDeliverySettings();
   return (
     <article className="container legal-page">
       <p className="eyebrow">THE LITTLE DETAILS</p>
@@ -20,8 +23,7 @@ export default function TermsPage() {
       </p>
       <h2>Delivery</h2>
       <p>
-        Delivery is free for orders of Rs 999 or more. A Rs 49 delivery fee applies
-        below this amount. Delivery areas and estimated times will be confirmed
+        {deliveryTerms(delivery)} Delivery areas and estimated times will be confirmed
         with you before dispatch.
       </p>
       <h2>Returns and issues</h2>

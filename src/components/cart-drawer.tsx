@@ -13,11 +13,11 @@ import {
 import { useStore } from "./store-provider";
 import { formatPrice } from "@/lib/catalog";
 import { useCatalog } from "./catalog-provider";
-import { business } from "@/lib/business";
+import { calcDelivery } from "@/lib/delivery";
 import { useEffect } from "react";
 
 export function CartDrawer() {
-  const { getProduct } = useCatalog();
+  const { getProduct, delivery } = useCatalog();
   const {
     cart,
     cartOpen,
@@ -78,31 +78,31 @@ export function CartDrawer() {
             </div>
             {cart.length ? (
               <>
-                <div className="delivery-progress">
-                  <Truck size={18} />
-                  <p>
-                    {subtotal >= business.freeDeliveryThreshold ? (
-                      "Lovely! Your order qualifies for free delivery."
-                    ) : (
-                      <>
-                        You’re{" "}
-                        <strong>
-                          {formatPrice(
-                            business.freeDeliveryThreshold - subtotal,
-                          )}
-                        </strong>{" "}
-                        away from free delivery.
-                      </>
-                    )}
-                  </p>
-                  <div>
-                    <span
-                      style={{
-                        width: `${Math.min((subtotal / business.freeDeliveryThreshold) * 100, 100)}%`,
-                      }}
-                    />
+                {delivery.fee > 0 && delivery.freeThreshold > 0 ? (
+                  <div className="delivery-progress">
+                    <Truck size={18} />
+                    <p>
+                      {subtotal >= delivery.freeThreshold ? (
+                        "Lovely! Your order qualifies for free delivery."
+                      ) : (
+                        <>
+                          You’re{" "}
+                          <strong>
+                            {formatPrice(delivery.freeThreshold - subtotal)}
+                          </strong>{" "}
+                          away from free delivery.
+                        </>
+                      )}
+                    </p>
+                    <div>
+                      <span
+                        style={{
+                          width: `${Math.min((subtotal / delivery.freeThreshold) * 100, 100)}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
+                ) : null}
                 <div className="cart-items">
                   {cart.map((item) => {
                     const p = getProduct(item.id)!;

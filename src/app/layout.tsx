@@ -7,6 +7,7 @@ import { Overlays } from "@/components/overlays";
 import { CatalogProvider } from "@/components/catalog-provider";
 import { PublicOnly } from "@/components/public-only";
 import { getProducts } from "@/lib/products";
+import { getDeliverySettings } from "@/lib/settings";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,7 +27,10 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const products = await getProducts();
+  const [products, delivery] = await Promise.all([
+    getProducts(),
+    getDeliverySettings(),
+  ]);
   return (
     <html lang="en">
       <head>
@@ -42,7 +46,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <CatalogProvider products={products}>
+        <CatalogProvider products={products} delivery={delivery}>
           <StoreProvider>
             <PublicOnly>
               <SiteHeader />

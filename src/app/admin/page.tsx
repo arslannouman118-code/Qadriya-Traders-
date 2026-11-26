@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { desc, eq, lte, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { orders, products } from "@/db/schema";
+import { inquiries, orders, products } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
 import { formatPrice } from "@/lib/catalog";
 import { importSampleProducts } from "./actions";
@@ -13,6 +13,7 @@ export default async function AdminDashboard() {
     lowStock: number;
     pending: number;
     orderCount: number;
+    newMessages: number;
     recent: (typeof orders.$inferSelect)[];
   } | null = null;
   try {
@@ -30,6 +31,10 @@ export default async function AdminDashboard() {
     const [all] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(orders);
+    const [msg] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(inquiries)
+      .where(eq(inquiries.handled, false));
     const recent = await db
       .select()
       .from(orders)
@@ -40,6 +45,7 @@ export default async function AdminDashboard() {
       lowStock: low.count,
       pending: pend.count,
       orderCount: all.count,
+      newMessages: msg.count,
       recent,
     };
   } catch (error) {
@@ -88,6 +94,10 @@ export default async function AdminDashboard() {
         <Link href="/admin/products" className="adm-stat">
           <b>{data.productCount}</b>
           <span>Products</span>
+        </Link>
+        <Link href="/admin/messages?show=new" className={`adm-stat${data.newMessages ? " warn" : ""}`}>
+          <b>{data.newMessages}</b>
+          <span>Messages not replied to</span>
         </Link>
         <Link href="/admin/products" className={`adm-stat${data.lowStock ? " warn" : ""}`}>
           <b>{data.lowStock}</b>

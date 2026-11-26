@@ -2,7 +2,8 @@ import { and, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { orders, products as productsTable } from "@/db/schema";
 import { getProducts } from "@/lib/products";
-import { business } from "@/lib/business";
+import { getDeliverySettings } from "@/lib/settings";
+import { calcDelivery } from "@/lib/delivery";
 import { randomUUID } from "node:crypto";
 
 class StockError extends Error {}
@@ -90,8 +91,7 @@ export async function POST(request: Request) {
       (sum, item) => sum + item.price * item.quantity,
       0,
     );
-    const delivery =
-      subtotal >= business.freeDeliveryThreshold ? 0 : business.deliveryFee;
+    const delivery = calcDelivery(subtotal, await getDeliverySettings());
     const reference = `QT-${Date.now().toString(36).toUpperCase()}-${randomUUID().slice(0, 4).toUpperCase()}`;
 
     // Save the order and reduce the stock together, or neither.

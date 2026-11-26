@@ -10,8 +10,11 @@ import {
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { photos } from "@/lib/catalog";
+import { deliveryShort } from "@/lib/delivery";
+import { useCatalog } from "../catalog-provider";
 
 export function Hero() {
+  const { delivery } = useCatalog();
   const reduced = useReducedMotion();
   return (
     <>
@@ -135,7 +138,7 @@ export function Hero() {
             <Truck />
             <span>
               <strong>Delivered with care</strong>
-              <small>Free delivery on orders Rs 999+</small>
+              <small>{deliveryShort(delivery)}</small>
             </span>
           </div>
           <div>

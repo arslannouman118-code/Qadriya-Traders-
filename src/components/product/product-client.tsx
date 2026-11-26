@@ -3,7 +3,10 @@ import { useState } from "react";
 import { Minus, Plus, ShoppingBag, Heart, Check, Truck } from "lucide-react";
 import { type Product, formatPrice, getCategory } from "@/lib/catalog";
 import { useStore } from "../store-provider";
+import { useCatalog } from "../catalog-provider";
+import { deliveryLong } from "@/lib/delivery";
 export function ProductClient({ product }: { product: Product }) {
+  const { delivery } = useCatalog();
   const [quantity, setQuantity] = useState(1);
   const [imageIndex, setImageIndex] = useState(0);
   const { addItem, setCartOpen, wishlist, toggleWishlist } = useStore();
@@ -115,7 +118,7 @@ export function ProductClient({ product }: { product: Product }) {
           <Truck size={25} />
           <div>
             <strong>Delivered with care</strong>
-            <small>Free delivery on orders Rs 999+. Otherwise Rs 49.</small>
+            <small>{deliveryLong(delivery)}</small>
           </div>
         </div>
       </div>

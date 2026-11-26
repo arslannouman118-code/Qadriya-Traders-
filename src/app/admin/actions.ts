@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { orders, productImages, products } from "@/db/schema";
+import { inquiries, orders, productImages, products, settings } from "@/db/schema";
 import {
   checkPassword,
   createSession,
@@ -275,4 +275,78 @@ export async function updateOrderStatus(formData: FormData) {
   });
   revalidatePath("/admin", "layout");
   revalidatePath("/", "layout");
+}
+
+// ---------- Order delivery charge (one order only) ----------
+
+export async function updateOrderDelivery(formData: FormData) {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  const delivery = whole(String(formData.get("delivery") || ""));
+  if (!Number.isInteger(id) || !Number.isInteger(delivery)) return;
+  if (delivery < 0 || delivery > 1_000_000) return;
+  await db.transaction(async (tx) => {
+    const [order] = await tx
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id))
+      .limit(1);
+    if (!order || order.status === "cancelled") return;
+    await tx
+      .update(orders)
+      .set({ delivery, total: order.subtotal + delivery })
+      .where(eq(orders.id, id));
+  });
+  revalidatePath("/admin", "layout");
+}
+
+// ---------- Delivery settings (for all new orders) ----------
+
+export async function saveDeliverySettings(formData: FormData) {
+  await requireAdmin();
+  const fee = whole(String(formData.get("fee") || ""));
+  const threshold = whole(String(formData.get("threshold") || ""));
+  if (
+    !Number.isInteger(fee) ||
+    fee < 0 ||
+    fee > 1_000_000 ||
+    !Number.isInteger(threshold) ||
+    threshold < 0 ||
+    threshold > 100_000_000
+  )
+    redirect("/admin/settings?error=1");
+  const now = new Date();
+  for (const [key, value] of [
+    ["delivery_fee", fee],
+    ["free_delivery_threshold", threshold],
+  ] as const) {
+    await db
+      .insert(settings)
+      .values({ key, value: String(value), updatedAt: now })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value: String(value), updatedAt: now },
+      });
+  }
+  revalidatePath("/", "layout");
+  redirect("/admin/settings?saved=1");
+}
+
+// ---------- Contact messages ----------
+
+export async function setMessageHandled(formData: FormData) {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  const handled = String(formData.get("handled")) === "true";
+  if (!Number.isInteger(id)) return;
+  await db.update(inquiries).set({ handled }).where(eq(inquiries.id, id));
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteMessage(formData: FormData) {
+  await requireAdmin();
+  const id = Number(formData.get("id"));
+  if (!Number.isInteger(id)) return;
+  await db.delete(inquiries).where(eq(inquiries.id, id));
+  revalidatePath("/admin", "layout");
 }

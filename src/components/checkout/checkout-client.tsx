@@ -10,18 +10,18 @@ import {
 } from "lucide-react";
 import { useStore } from "../store-provider";
 import { formatPrice } from "@/lib/catalog";
+import { calcDelivery } from "@/lib/delivery";
 import { useCatalog } from "../catalog-provider";
 import { business, whatsappUrl } from "@/lib/business";
 
 export function CheckoutClient() {
-  const { getProduct } = useCatalog();
+  const { getProduct, delivery: deliverySettings } = useCatalog();
   const { cart, subtotal, clearCart, setCartOpen } = useStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [reference, setReference] = useState("");
   const [orderTotal, setOrderTotal] = useState(0);
-  const delivery =
-    subtotal >= business.freeDeliveryThreshold ? 0 : business.deliveryFee;
+  const delivery = calcDelivery(subtotal, deliverySettings);
   const total = subtotal + delivery;
   const message = `Hello Qadriya Traders! I’d like to order:\n${cart
     .map((i) => {
