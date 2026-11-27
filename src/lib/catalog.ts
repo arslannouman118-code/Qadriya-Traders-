@@ -140,6 +140,14 @@ export const categories: Category[] = [
     image: photos.pastel,
     color: "#e6e9d9",
   },
+  {
+    id: "binding-materials",
+    name: "Binding Materials",
+    shortName: "Binding Materials",
+    description: "Everything you need to bind your books.",
+    image: photos.paper,
+    color: "#e6e0d6",
+  },
 ];
 
 export const products: Product[] = [

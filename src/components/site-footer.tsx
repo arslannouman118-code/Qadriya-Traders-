@@ -41,6 +41,7 @@ export function SiteFooter() {
             <Link href="/about">Our story</Link>
             <Link href="/contact">Contact us</Link>
             <Link href="/book-binding">Book binding</Link>
+            <Link href="/binding-materials">Binding materials</Link>
             <Link href="/contact?subject=Bulk%20order%20enquiry">
               Bulk & school orders
             </Link>

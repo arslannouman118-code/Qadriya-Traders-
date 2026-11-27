@@ -49,6 +49,7 @@ export function SiteHeader() {
     { href: "/shop", label: "Shop" },
     { href: "/categories", label: "Categories" },
     { href: "/book-binding", label: "Book Binding" },
+    { href: "/binding-materials", label: "Binding Materials" },
     { href: "/about", label: "About Us" },
     { href: "/contact", label: "Contact" },
   ];
